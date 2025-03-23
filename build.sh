@@ -1,1 +1,1 @@
-gcc main.c -o csinfo -lgif
+gcc main.c -o csinfo
