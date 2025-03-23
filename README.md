@@ -7,4 +7,5 @@
 5. run "chmod +x ./csinfo"
 6. run "./csinfo"
 # LINUX ONLY WITH NO WINDOWS/MACOS PORT PLANNED
-![{4DF90C9F-C8C8-4B31-9919-DF34406F5286}](https://github.com/user-attachments/assets/6df67a77-83cd-4eb3-8cd3-5ffaaa40687f)
+
+![{A62EA94C-8E13-4BA3-811C-C09C662DB5FD}](https://github.com/user-attachments/assets/7e92a50c-8c8b-4822-a2fa-80cf759aa446)
