@@ -9,7 +9,7 @@
 
 const char *ASCII_CHARS = "@%#*+=-:. ";
 
-void sc_j_c(void) {
+int sc_j_c() {
     long jc = sysconf(_SC_JOB_CONTROL);
     if (jc == -1) {
         perror("sysconf");
