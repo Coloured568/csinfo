@@ -170,10 +170,11 @@ void distro(void) {
     fclose(fp);
 }
 
-void config(const char *filename, char *header, size_t header_size) {
+void config(const char *filename, const char *field_name, char *field_value, size_t field_size) {
     FILE *fp = fopen(filename, "r");
     if (!fp) {
         printf("Failed to open config file: %s\n", filename);
+        field_value[0] = '\0'; // Ensure the field is empty on failure
         return;
     }
 
@@ -181,9 +182,12 @@ void config(const char *filename, char *header, size_t header_size) {
     while (fgets(line, sizeof(line), fp)) {
         char *key = strtok(line, "=");
         char *value = strtok(NULL, "\n");
-        if (key && value && strcmp(key, "TITLE") == 0) {
-            strncpy(header, value, header_size - 1);
-            header[header_size - 1] = '\0'; // Ensure null termination
+        if (key && value && strcmp(key, field_name) == 0) {
+            if (strlen(value) >= field_size) {
+                printf("Warning: Value for '%s' is too long and will be truncated.\n", field_name);
+            }
+            strncpy(field_value, value, field_size - 1);
+            field_value[field_size - 1] = '\0'; // Ensure null termination
             break;
         }
     }
@@ -192,8 +196,12 @@ void config(const char *filename, char *header, size_t header_size) {
 }
 
 void output(void) {
-    char title[256] = {0};
-    config("conf", title, sizeof(title));
+    char title[256] = {0}; // Default title
+    char footer[256] = {0}; // Default footer
+
+    config("conf", "title", title, sizeof(title));
+    config("conf", "footer", footer, sizeof(footer));
+
     printf("\033[1m\033[31m%s\033[0m\n------------------------ \n", title);
     sc_j_c();
     cpu();
@@ -202,6 +210,7 @@ void output(void) {
     kernel();
     uptime();
     distro();
+    printf("------------------------ \n\033[1m\033[31m%s\033[0m\n", footer);
 }
 
 int main(void) {
