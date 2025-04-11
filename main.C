@@ -5,10 +5,6 @@
 #include <string.h>
 #include <pthread.h>
 
-#define TEXT_WIDTH 40
-
-const char *ASCII_CHARS = "@%#*+=-:. ";
-
 int sc_j_c() {
     long jc = sysconf(_SC_JOB_CONTROL);
     if (jc == -1) {
@@ -144,14 +140,68 @@ void uptime(void) {
     fclose(fp);
 }
 
+void distro(void) {
+    FILE *fp = fopen("/etc/os-release", "r");
+    if (!fp) {
+        printf("Failed to get distro details!\n");
+        return;
+    }
+
+    char line[256];
+    char distro[256] = {0};
+    char version[256] = {0};
+
+    while (fgets(line, sizeof(line), fp)) {
+        if (sscanf(line, "PRETTY_NAME=\"%255[^\"]\"", distro) == 1) {
+            // Successfully parsed PRETTY_NAME
+        }
+        if (sscanf(line, "VERSION_ID=\"%255[^\"]\"", version) == 1) {
+            // Successfully parsed VERSION_ID
+        }
+    }
+
+    if (strlen(distro) > 0) {
+        printf("\033[1mDistro\033[0m: %s", distro);
+    }
+    if (strlen(version) > 0) {
+        printf(" %s\n", version);
+    }
+
+    fclose(fp);
+}
+
+void config(const char *filename, char *header, size_t header_size) {
+    FILE *fp = fopen(filename, "r");
+    if (!fp) {
+        printf("Failed to open config file: %s\n", filename);
+        return;
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), fp)) {
+        char *key = strtok(line, "=");
+        char *value = strtok(NULL, "\n");
+        if (key && value && strcmp(key, "TITLE") == 0) {
+            strncpy(header, value, header_size - 1);
+            header[header_size - 1] = '\0'; // Ensure null termination
+            break;
+        }
+    }
+
+    fclose(fp);
+}
+
 void output(void) {
-    printf("\033[1m\033[31mColoured's System info\033[0m\n------------------------ \n");
+    char title[256] = {0};
+    config("conf", title, sizeof(title));
+    printf("\033[1m\033[31m%s\033[0m\n------------------------ \n", title);
     sc_j_c();
     cpu();
     gpu();
     ram();
     kernel();
     uptime();
+    distro();
 }
 
 int main(void) {
