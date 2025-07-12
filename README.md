@@ -2,6 +2,7 @@
 
 > **Note:** This project is only supported on **Linux**.  
 > No Windows or macOS ports are planned.
+> Requires gcc to compile
 
 ---
 
